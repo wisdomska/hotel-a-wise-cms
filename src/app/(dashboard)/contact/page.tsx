@@ -1,23 +1,36 @@
 import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
+import { ContactEditor } from "@/app/(dashboard)/contact/contact-editor";
+import { createClient } from "@/lib/supabase/server";
+import type { ContactInfo } from "@/types/content";
 
 export const metadata = { title: "Contact & Footer" };
+export const dynamic = "force-dynamic";
 
-export default function Page() {
+const defaultContact: ContactInfo = {
+  id: "main",
+  phone: "+233 (0) 540 120 400",
+  email: "info@hotelawise.com",
+  address: "No. 1 Wisepak Lane, New Asofan — Accra",
+  maps_link: "https://www.google.com/maps/search/?api=1&query=Hotel+A-Wise+Accra",
+  copyright_text: "Hotel A-Wise | © 2025",
+  footer_tagline: "Affordable luxury, made in Accra.",
+};
+
+async function getContact(): Promise<ContactInfo> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("contact").select("*").eq("id", "main").maybeSingle<ContactInfo>();
+  return data ?? defaultContact;
+}
+
+export default async function ContactPage() {
+  const contact = await getContact();
   return (
     <div className="space-y-8">
-      <PageHeader title="Contact & Footer" description="Edit hotel contact details shown in the footer." />
-      <div className="card grid place-items-center px-8 py-16 text-center">
-        <div className="font-display text-2xl">In progress</div>
-        <p className="mt-2 max-w-sm text-sm text-[var(--color-text-muted)]">
-          The CMS for this section is being built on the same patterns as the Hero editor.
-          Use the Hero page to see the live preview + server-action pattern.
-        </p>
-        <div className="mt-6 flex gap-3">
-          <Button href="/hero" variant="secondary">Open Hero editor</Button>
-          <Button href="https://hotel-a-wise.vercel.app" variant="ghost">View Live Site ↗</Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Contact & Footer"
+        description="The phone, email, address and footer text shown across the public site."
+      />
+      <ContactEditor initial={contact} />
     </div>
   );
 }
