@@ -3,5 +3,5 @@
 import { revalidatePublicSite } from "@/lib/revalidate";
 
 export async function revalidateNow() {
-  await revalidatePublicSite({ paths: ["/"], tags: ["landing-content"] });
+  await revalidatePublicSite({ paths: ["/"]});
 }

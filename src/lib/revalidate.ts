@@ -4,7 +4,7 @@ import "server-only";
  * Pings the public site's revalidation endpoint to bust its ISR cache after
  * a CMS edit. Configure via PUBLIC_SITE_URL + REVALIDATION_SECRET env vars.
  */
-export async function revalidatePublicSite(body: { paths?: string[]; tags?: string[] }) {
+export async function revalidatePublicSite(body: { paths?: string[] }) {
   const url = process.env.PUBLIC_SITE_URL;
   const secret = process.env.REVALIDATION_SECRET;
   if (!url || !secret) return { ok: false, skipped: true as const };

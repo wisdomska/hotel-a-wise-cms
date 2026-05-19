@@ -2,6 +2,10 @@ import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
+/**
+ * Server-side Supabase client. Uses the anon key — RLS enforces what data
+ * each authenticated (or anonymous) user can see.
+ */
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -13,13 +17,13 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           try {
-            cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options: CookieOptions }) =>
+            cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
           } catch {
-            // can't set cookies in pure server components — middleware handles it
+            // Server Components can't set cookies — middleware handles refresh.
           }
         },
       },
