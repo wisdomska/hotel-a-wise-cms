@@ -40,6 +40,6 @@ export async function saveHero(_prev: ActionState, formData: FormData): Promise<
   if (error) return { ok: false, message: error.message };
 
   revalidatePath("/hero");
-  await revalidatePublicSite({ paths: ["/"], tags: ["landing-content"] }).catch(() => null);
+  await revalidatePublicSite({ paths: ["/"]}).catch(() => null);
   return { ok: true, message: "Hero saved. Public site will refresh shortly." };
 }
