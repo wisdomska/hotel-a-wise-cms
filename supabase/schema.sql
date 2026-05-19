@@ -288,3 +288,30 @@ create policy "Admins can manage media objects"
 -- Done. Verify by selecting from each table:
 --   select count(*) from public.hero, public.amenities, public.rooms, public.testimonials, public.contact;
 -- =============================================================================
+
+-- ----------------------------------------------------------------------------
+-- Inquiries  (public-submitted booking inquiries from the contact form)
+-- ----------------------------------------------------------------------------
+create table if not exists public.inquiries (
+  id            uuid primary key default gen_random_uuid(),
+  name          text not null,
+  email         text not null,
+  phone         text,
+  message       text not null,
+  room_slug     text,
+  source        text default 'website',
+  read          boolean not null default false,
+  created_at    timestamptz not null default now()
+);
+
+alter table public.inquiries enable row level security;
+drop policy if exists "Anyone can submit an inquiry" on public.inquiries;
+drop policy if exists "Inquiries are visible to admins" on public.inquiries;
+
+create policy "Anyone can submit an inquiry"
+  on public.inquiries for insert
+  with check (true);
+
+create policy "Inquiries are visible to admins"
+  on public.inquiries for select
+  using (public.is_admin());
